@@ -2,9 +2,9 @@ package com.stockflow.product;
 
 import com.stockflow.common.ApiException;
 import com.stockflow.common.PageResponse;
+import com.stockflow.invoice.InvoiceRepository;
 import com.stockflow.product.dto.ProductRequest;
 import com.stockflow.product.dto.ProductResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +21,11 @@ public class ProductService {
             java.util.Set.of("name", "sku", "unitPrice", "quantityOnHand", "createdAt");
 
     private final ProductRepository productRepository;
+    private final InvoiceRepository invoiceRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, InvoiceRepository invoiceRepository) {
         this.productRepository = productRepository;
+        this.invoiceRepository = invoiceRepository;
     }
 
     @Transactional(readOnly = true)
@@ -54,14 +56,9 @@ public class ProductService {
         if (productRepository.existsByUserIdAndSkuIgnoreCase(userId, request.sku().trim())) {
             throw ApiException.badRequest("Validation failed", "sku", "SKU already exists");
         }
-        try {
-            Product product = new Product(userId, request.sku().trim(), request.name().trim(),
-                    emptyToNull(request.description()), request.unitPrice(), request.quantityOnHand());
-            return ProductResponse.from(productRepository.save(product));
-        } catch (DataIntegrityViolationException e) {
-            // unique(user_id, sku) constraint as a second line of defense
-            throw ApiException.badRequest("Validation failed", "sku", "SKU already exists");
-        }
+        Product product = new Product(userId, request.sku().trim(), request.name().trim(),
+                emptyToNull(request.description()), request.unitPrice(), request.quantityOnHand());
+        return ProductResponse.from(productRepository.save(product));
     }
 
     @Transactional
@@ -87,12 +84,10 @@ public class ProductService {
     @Transactional
     public void delete(UUID userId, UUID id) {
         Product product = findOwned(userId, id);
-        try {
-            productRepository.delete(product);
-            productRepository.flush();
-        } catch (DataIntegrityViolationException e) {
+        if (invoiceRepository.existsByItemsProductIdAndUserId(product.getId(), userId)) {
             throw ApiException.conflict("Cannot delete product: it is referenced by one or more invoices");
         }
+        productRepository.delete(product);
     }
 
     private Product findOwned(UUID userId, UUID id) {
