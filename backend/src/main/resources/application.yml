@@ -1,10 +1,16 @@
 spring:
   application:
     name: stockflow
+  autoconfigure:
+    # We authenticate via our own AuthService + JWT filter; no in-memory default user.
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/stockflow}
     username: ${DB_USER:stockflow}
     password: ${DB_PASSWORD:stockflow}
+    # NOTE (dev machine): Homebrew postgresql@18 already binds 127.0.0.1:5432,
+    # shadowing Docker's mapping. Run the container with -p 5433:5432 and set
+    # DB_URL=jdbc:postgresql://localhost:5433/stockflow when running locally.
   jpa:
     open-in-view: false
     hibernate:
