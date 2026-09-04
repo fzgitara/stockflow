@@ -13,5 +13,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/products/products-list').then((m) => m.ProductsList),
   },
+  {
+    path: 'invoices',
+    canActivate: [authGuard],
+    children: [
+      { path: '', loadComponent: () => import('./features/invoices/invoices-list').then((m) => m.InvoicesList) },
+      { path: 'new', loadComponent: () => import('./features/invoices/invoice-create').then((m) => m.InvoiceCreate) },
+      { path: ':id', loadComponent: () => import('./features/invoices/invoice-detail').then((m) => m.InvoiceDetail) },
+    ],
+  },
   { path: '**', redirectTo: 'products' },
 ];

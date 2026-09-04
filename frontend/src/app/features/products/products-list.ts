@@ -1,7 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { toApiError } from '../../core/auth-interceptor';
 import { TokenStore } from '../../core/token-store';
 import { ErrorBanner } from '../../shared/error-banner';
@@ -10,13 +10,16 @@ import { ApiError } from '../../core/api-error';
 import { Product, ProductPayload, ProductService } from './product-service';
 
 @Component({
-  imports: [FormsModule, ErrorBanner, Loading, CurrencyPipe, DecimalPipe],
+  imports: [FormsModule, RouterLink, ErrorBanner, Loading, CurrencyPipe, DecimalPipe],
   selector: 'app-products-list',
   template: `
     <main class="min-h-screen bg-slate-50">
       <header class="border-b border-slate-200 bg-white">
         <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <h1 class="text-xl font-semibold">StockFlow — Products</h1>
+          <nav class="flex items-center gap-4 text-sm">
+            <span class="font-semibold text-slate-900">Products</span>
+            <a routerLink="/invoices" class="text-slate-500 hover:text-slate-900">Invoices</a>
+          </nav>
           <button (click)="logout()"
                   class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-100">
             Logout
