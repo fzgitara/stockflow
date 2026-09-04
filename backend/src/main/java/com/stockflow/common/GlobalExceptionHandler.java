@@ -18,6 +18,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+        if (ex.getField() != null) {
+            return ResponseEntity.badRequest()
+                    .body(ErrorResponse.of(ex.getStatus(), ex.getMessage(), ex.getField(), ex.getFieldMessage()));
+        }
         return ResponseEntity.status(ex.getStatus()).body(ErrorResponse.of(ex.getStatus(), ex.getMessage()));
     }
 
