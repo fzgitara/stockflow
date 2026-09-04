@@ -25,7 +25,7 @@ import { ApiError } from '../../core/api-error';
             <label for="password" class="mb-1 block text-sm font-medium text-slate-700">Password</label>
             <input id="password" type="password" required minlength="8" [(ngModel)]="password" name="password"
                    class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none" />
-            <p class="mt-1 text-xs text-slate-500">At least 8 characters (enforced server-side too).</p>
+            <p class="mt-1 text-xs text-slate-500">At least 8 characters.</p>
           </div>
           <button type="submit" [disabled]="busy() || !email || password.length < 8"
                   class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">
