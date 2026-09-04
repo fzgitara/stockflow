@@ -44,10 +44,18 @@ import { Product, ProductPayload, ProductService } from './product-service';
             <table class="w-full text-left text-sm">
               <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th class="px-4 py-3">SKU</th>
-                  <th class="px-4 py-3">Name</th>
-                  <th class="px-4 py-3 text-right">Price</th>
-                  <th class="px-4 py-3 text-right">Stock</th>
+                  <th class="cursor-pointer select-none px-4 py-3 hover:text-slate-800" (click)="toggleSort('sku')">
+                    SKU {{ sortArrow('sku') }}
+                  </th>
+                  <th class="cursor-pointer select-none px-4 py-3 hover:text-slate-800" (click)="toggleSort('name')">
+                    Name {{ sortArrow('name') }}
+                  </th>
+                  <th class="cursor-pointer select-none px-4 py-3 text-right hover:text-slate-800" (click)="toggleSort('unitPrice')">
+                    Price {{ sortArrow('unitPrice') }}
+                  </th>
+                  <th class="cursor-pointer select-none px-4 py-3 text-right hover:text-slate-800" (click)="toggleSort('quantityOnHand')">
+                    Stock {{ sortArrow('quantityOnHand') }}
+                  </th>
                   <th class="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -146,6 +154,8 @@ export class ProductsList {
   readonly last = signal(true);
   readonly loading = signal(true);
   readonly error = signal<ApiError | null>(null);
+  readonly sortBy = signal('createdAt');
+  readonly sortDir = signal<'asc' | 'desc'>('desc');
 
   readonly formOpen = signal(false);
   readonly editingId = signal<string | null>(null);
@@ -162,7 +172,7 @@ export class ProductsList {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.productService.list(this.search(), this.page(), 10).subscribe({
+    this.productService.list(this.search(), this.page(), 10, this.sortBy(), this.sortDir()).subscribe({
       next: (res) => {
         this.products.set(res.content);
         this.page.set(res.page);
@@ -191,6 +201,22 @@ export class ProductsList {
     if (p < 0 || p >= this.totalPages()) return;
     this.page.set(p);
     this.load();
+  }
+
+  toggleSort(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDir.set(this.sortDir() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDir.set('asc');
+    }
+    this.page.set(0);
+    this.load();
+  }
+
+  sortArrow(field: string): string {
+    if (this.sortBy() !== field) return '';
+    return this.sortDir() === 'asc' ? '▲' : '▼';
   }
 
   openCreate(): void {

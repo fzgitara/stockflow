@@ -17,6 +17,9 @@ import java.util.UUID;
 @Service
 public class ProductService {
 
+    private static final java.util.Set<String> SORTABLE_FIELDS =
+            java.util.Set.of("name", "sku", "unitPrice", "quantityOnHand", "createdAt");
+
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
@@ -24,12 +27,21 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> list(UUID userId, String search, int page, int size) {
-        Pageable pageable = PageRequest.of(Math.max(page, 0), clampSize(size));
+    public PageResponse<ProductResponse> list(UUID userId, String search, int page, int size,
+                                              String sortBy, String sortDir) {
+        Sort sort = buildSort(sortBy, sortDir);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), clampSize(size), sort);
         Page<Product> result = (search == null || search.isBlank())
-                ? productRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                ? productRepository.findByUserId(userId, pageable)
                 : productRepository.searchByUser(userId, search.trim(), pageable);
         return PageResponse.from(result.map(ProductResponse::from));
+    }
+
+    /** Whitelisted fields only — sortBy never reaches the DB as raw column text. */
+    private static Sort buildSort(String sortBy, String sortDir) {
+        String field = (sortBy != null && SORTABLE_FIELDS.contains(sortBy)) ? sortBy : "createdAt";
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return Sort.by(direction, field);
     }
 
     @Transactional(readOnly = true)

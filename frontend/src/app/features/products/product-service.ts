@@ -36,8 +36,9 @@ export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/products`;
 
-  list(search: string, page: number, size: number): Observable<PageResponse<Product>> {
-    let params = new HttpParams().set('page', page).set('size', size);
+  list(search: string, page: number, size: number, sortBy: string, sortDir: string): Observable<PageResponse<Product>> {
+    let params = new HttpParams().set('page', page).set('size', size)
+      .set('sortBy', sortBy).set('sortDir', sortDir);
     if (search.trim()) {
       params = params.set('search', search.trim());
     }

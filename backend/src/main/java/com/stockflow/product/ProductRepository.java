@@ -15,8 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     /**
      * All queries are scoped by user_id (A7): a user never sees or touches
      * another user's rows. Search matches name OR sku (I2), case-insensitive.
+     * Ordering comes from the Pageable's Sort (whitelisted in ProductService).
      */
-    Page<Product> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
+    Page<Product> findByUserId(UUID userId, Pageable pageable);
 
     @Query("""
             SELECT p FROM Product p
