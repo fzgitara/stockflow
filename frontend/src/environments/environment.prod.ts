@@ -1,8 +1,5 @@
-/**
- * Production API base URL — overridden at build time (see package.json
- * fileReplacements / deployment CI) to point at the deployed backend.
- */
+// AUTO-GENERATED at build time by scripts/write-prod-env.js — do not edit.
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://localhost:8080/api',
+  apiBaseUrl: 'https://api.example.com/api',
 };

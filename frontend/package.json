@@ -4,9 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run write-prod-env && ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "write-prod-env": "node scripts/write-prod-env.js"
   },
   "private": true,
   "packageManager": "npm@11.0.0",
