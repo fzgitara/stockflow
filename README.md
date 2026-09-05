@@ -1,5 +1,11 @@
 # StockFlow
 
+> **Live demo:** App → https://stockflow-weld-xi.vercel.app · API docs → https://stockflow-api-7wgb.onrender.com/swagger-ui.html
+>
+> *Backend runs on Render's free tier — the first request after idle may take up to ~50s to wake.*
+>
+> **Demo login:** `demo@stockflow.local` / `password123`
+
 A minimal Inventory & Invoicing system for a small distribution business: staff members track
 products with stock on hand, raise invoices for customers, and stock moves automatically —
 down when an invoice is issued, back when it is cancelled.
