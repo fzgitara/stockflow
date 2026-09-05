@@ -71,6 +71,18 @@ Open http://localhost:4200 — the dev server proxies `/api/*` to the backend on
 
 You can also register your own account from the UI.
 
+### Alternative: docker compose (one command)
+
+Builds and starts all three services (PostgreSQL, backend, frontend) with a dedicated database volume:
+
+```bash
+docker compose up --build
+```
+
+Then open http://localhost:4200 (SPA + API proxied via nginx). Host ports are chosen to avoid
+clashing with local dev processes: frontend **4200**, backend **8081**, Postgres **5434**.
+The demo seed runs automatically on first start (`SEED_ENABLED` defaults to true in compose).
+
 ### Run tests
 
 ```bash
